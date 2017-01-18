@@ -27,7 +27,3 @@ def create_app(config_name):
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
     return app
-
-@login_manager.user_loader
-def load_user(uesr_id):
-	return User.query.get(int(user_id))
