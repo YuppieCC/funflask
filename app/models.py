@@ -4,6 +4,13 @@ from flask.ext.login import UserMixin
 from . import db, login_manager
 
 
+class Permission:
+    FOLLOW = 0x01
+    COMMENT = 0x02
+    WRITE_ARTICLES = 0x04
+    MODERATE_COMMENTS = 0x08
+    ADMINSTER = 0x80
+
 class Role(db.Model):
     __tablename__ = 'Flaskroles'
     id = db.Column(db.Integer, primary_key=True)
@@ -13,11 +20,33 @@ class Role(db.Model):
     def __repr__(self):
         return 'Role: %r' % self.name
 
+    @staticmethod
+    def insert_roles():
+        roles = {
+            'User': (Permission.FOLLOW |
+                     Permission.COMMENT |
+                     Permission.WRITE_ARTICLES, True),
+            'Moderator': (Permission.FOLLOW |
+                          Permission.COMMENT |
+                          Permission.WRITE_ARTICLES |
+                          Permission.MODERATE_COMMENTS, False),
+            'Administrator': (0xff, False)
+        }
+        for r in roles:
+            role = Role.query.filter_by(name=r).first()
+            if role is None:
+                role = Role(name=r)
+            role.permissions = roles[r][0]
+            role.default = roles[r][1]
+            db.session.add(role)
+        db.session.commit()    
+
 class User(db.Model, UserMixin):
     __tablename__ = 'Flaskusers'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
+    location = db.Column(db.String(64), unique=True, index=True)
     role_id = db.Column(db.Integer, db.ForeignKey('Flaskroles.id'))
     password_hash = db.Column(db.String(128))
 

@@ -19,6 +19,7 @@ class RegistrationForm(Form):
         Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0, 
         'Usernames must have only letters,\
         numbers, dots, or underscores')])
+    location = StringField('Location', validators=[Length(1, 64)])
     password = PasswordField('Password', validators=[Required(),
         EqualTo('password2', message='Passwords must match.')])
     password2 = PasswordField('Confirm password', validators=[Required()])
@@ -31,3 +32,10 @@ class RegistrationForm(Form):
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('Username already in use.')
+
+class ResetPasswordForm(Form):
+    old_password = PasswordField('Old Password', validators=[Required(), Length(1, 64)])
+    new_password = PasswordField('New Password', validators=[Required(),
+        EqualTo('new_password2', message='Passwords must match.')])
+    new_password2 = PasswordField('Confirm Password', validators=[Required()])
+    submit = SubmitField('Submit')

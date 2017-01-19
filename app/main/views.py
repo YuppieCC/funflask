@@ -16,10 +16,5 @@ def index():
         	session['known'] = False
         else:
         	session['known'] = True
-        old_name = session.get('name')
-        if old_name is not None and old_name != form.name.data:
-            flash('You have changed your name!')
-        session['name'] = form.name.data
-        return redirect(url_for('.index'))
     return render_template('index.html', form=form, name=session.get('name'),
         known=session.get('known'))

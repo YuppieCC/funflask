@@ -1,11 +1,11 @@
 from flask import render_template, redirect, request, url_for, flash
-from flask.ext.login import login_user
+from flask.ext.login import login_user, current_user
 from flask.ext.login import logout_user, login_required
 
 from . import auth
 from .. import db
 from ..models import User
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, ResetPasswordForm
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -38,3 +38,23 @@ def register():
         flash('You can login.')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
+
+@auth.route('/resetpassword', methods=['GET', 'POST'])
+@login_required
+def resetpassword():
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.old_password.data):
+            if form.old_password.data == form.new_password.data:
+                flash('You password already in use.')
+                return redirect(url_for('auth.resetpassword'))
+            else:
+                current_user.password = form.new_password.data
+                db.session.add(current_user)
+                db.session.commit()
+                flash('You password has been changed.')
+                return redirect(url_for('main.index'))
+        else:
+            flash('Invalid password.')
+    return render_template('auth/resetpassword.html', form=form)
+
