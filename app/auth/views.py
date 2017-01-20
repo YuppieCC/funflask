@@ -58,3 +58,9 @@ def resetpassword():
             flash('Invalid password.')
     return render_template('auth/resetpassword.html', form=form)
 
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_login()
+
+
