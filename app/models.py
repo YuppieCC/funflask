@@ -2,6 +2,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin, AnonymousUserMixin
 from flask import flash, current_app, request, url_for
 from datetime import datetime
+import hashlib
 
 from . import db, login_manager
 
@@ -58,6 +59,8 @@ class User(db.Model, UserMixin):
     role_id = db.Column(db.Integer, db.ForeignKey('Flaskroles.id'))
     password_hash = db.Column(db.String(128))
 
+    avatar_hash = db.Column(db.String(32))
+
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
@@ -65,9 +68,9 @@ class User(db.Model, UserMixin):
                 self.role = Role.query.filter_by(permissions=0xff).first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
-        #if self.email is not None and self.avatar_hash is None:
-        #    self.avatar_hash = hashlib.md5(
-        #        self.email.encode('utf-8')).hexdigest()
+        if self.email is not None and self.avatar_hash is None:
+            self.avatar_hash = hashlib.md5(
+                self.email.encode('utf-8')).hexdigest()
         #self.followed.append(Follow(followed=self))
 
 
@@ -95,6 +98,23 @@ class User(db.Model, UserMixin):
     def last_login(self):
         self.last_login = datetime.utcnow()
         db.session.add(self)
+
+    def change_email(self, token):
+        self.email = new_email
+        self.avatar_hash = hashlib.md5(
+            self.email.encode('utf-8')).hexdigest()
+        db.session.add(self)
+        return True
+
+    def gravatar(self, size=100, default='identicon', rating='g'):
+        if request.is_secure:
+            url = 'https://secure.gravatar.com/avatar'
+        else:
+            url = 'http://www.gravatar.com/avatar'
+        hash = self.avatar_hash or hashlib.md5(
+            self.email.encode('utf-8')).hexdigest()
+        return '{url}/{hash}?s={size}%d={default}%r={rating}'.format(
+            url=url, hash=hash, size=size, default=default, rating=rating)
 
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
