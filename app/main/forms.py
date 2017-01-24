@@ -37,5 +37,5 @@ class EditProfileAdminForm(Form):
             raise ValidationError('Username already in user.')
 
 class PostForm(Form):
-    body = TextAreaField('Say something', validators=[Required()])
+    body = TextAreaField("what's in your mind?", validators=[Required()])
     submit = SubmitField('Submit')
