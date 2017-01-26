@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as marcos %}
 
 {% block title %}FlaskFun{% endblock %}
 
@@ -29,8 +30,15 @@
 				</a>
 			</div>
 			<div class="post-body">{{ post.body }}</div>
+			<br>
+			<br>
 	</li>
 	{% endfor %}
 </ul>
+{% if pagination %}
+<div class="pagination">
+	{{ marcos.pagination_widget(pagination, '.index') }}
+</div>
+{% endif%}
 </div>
 {% endblock %}

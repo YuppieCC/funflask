@@ -5,6 +5,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'flaskfun'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     FLASKY_ADMIN = 'eacent@yahoo.com'
+    FLASKY_POSTS_PER_PAGE = 50
 
     @staticmethod
     def init_app(app):
