@@ -48,6 +48,15 @@ class Role(db.Model):
             db.session.add(role)
         db.session.commit()    
 
+class Follow(db.Model):
+    __tablename__ = 'follows'
+    follower_id = db.Column(db.Integer, db.ForeignKey('Flaskusers.id'),
+                            primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('Flaskusers.id'),
+                            primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class User(db.Model, UserMixin):
     __tablename__ = 'Flaskusers'
     id = db.Column(db.Integer, primary_key=True)
@@ -61,7 +70,7 @@ class User(db.Model, UserMixin):
     role_id = db.Column(db.Integer, db.ForeignKey('Flaskroles.id'))
     password_hash = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
-    followed = db.Column('Follow',
+    followed = db.relationship('Follow',
                          foreign_keys=[Follow.follower_id],
                          backref=db.backref('follower', lazy='joined'),
                          cascade='all, delete-orphan')
@@ -162,13 +171,6 @@ class Post(db.Model):
 
 db.event.listen(Post.body, 'set', Post.on_changed_body)
 
-class Follow(db.Model):
-    __tablename__ = 'follows'
-    follower_id = db.Column(db.Integer, db.ForeignKey('Flaskusers.id'),
-                            primary_key=True)
-    followed_id = db.Column(db.Integer, db.ForeignKey('Flaskusers.id'),
-                            primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
