@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "_macros.html" as macros %}
 
 {% block title %}Flask - {{ title }} {{ user.username }}{% endblock %}
 
@@ -13,17 +14,17 @@
 	<tr>
 		<td>
 			<a href="{{ url_for('.user', username = follow.user.username) }}">
-				<img class="img-rounded" src="{{} follow.user.gravatar(size=32) }">
+				<img class="img-rounded" src="{{ follow.user.gravatar(size=32) }}">
 				{{ follow.user.username }}
 			</a>
 		</td>
-		<td>{{ moment(follow.timstamp).format('L') }}</td>
+		<td>{{ moment(follow.timestamp).format('L') }}</td>
 	</tr>
 	{% endif %}
 	{% endfor %}
 </table>
 <div class="pageination">
-	{{ macros.pagination_widget(pagination, endpoing, username = user.username) }}
+	{{ macros.pagination_widget(pagination, endpoint, username = user.username) }}
 </div>
 {% endblock %}
 
