@@ -95,13 +95,8 @@ class User(db.Model, UserMixin):
                 self.email.encode('utf-8')).hexdigest()
         self.followed.append(Follow(followed=self))
 
-
     def __repr__(self):
         return 'User: %r' % self.username
-
-    @property
-    def password(self):
-        raise AttributeError('password is not a readable attribute.')
 
     @staticmethod
     def add_self_follows():
@@ -110,6 +105,15 @@ class User(db.Model, UserMixin):
                 user.follow(user)
                 db.session.add(user)
                 db.session.commit()
+
+    @property
+    def followed_posts(self):
+        return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
+            .filter(Follow.follower_id == self.id)
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute.')
 
     @password.setter
     def password(self, password):

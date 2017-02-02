@@ -1,5 +1,5 @@
 from flask import render_template, session, redirect, url_for, flash, request,\
-    current_app
+    current_app, make_response
 from flask.ext.login import login_user, login_required, current_user
 
 from . import main
@@ -16,13 +16,20 @@ def index():
         db.session.add(post)
         return redirect(url_for('.index'))
     #posts = Post.query.order_by(Post.timestamp.desc()).all()
+    show_followed = False
+    if current_user.is_authenticated:
+        show_followed = bool(request.cookies.get('show_followed', ''))
+    if show_followed:
+        query = current_user.followed_posts
+    else:
+        query = Post.query
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+    pagination = query.order_by(Post.timestamp.desc()).paginate(
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     posts = pagination.items
-    return render_template('index.html', form=form, posts=posts, user=user, 
-             pagination=pagination)
+    return render_template('index.html', form=form, posts=posts,
+                           show_followed=show_followed,pagination=pagination)
 
 @main.route('/user/<username>')
 def user(username):
@@ -129,6 +136,20 @@ def follow(username):
     current_user.follow(user)
     flash('You are now following %s.' %  username)
     return redirect(url_for('.user', username=username))
+
+@main.route('/all')
+@login_required
+def show_all():
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed', '', max_age=30*24*60*60)
+    return resp
+
+@main.route('/followed')
+@login_required
+def show_followed():
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
+    return resp
 
 @main.route('/unfollow/<username>')
 @login_required
