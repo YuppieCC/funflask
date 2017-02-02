@@ -74,9 +74,21 @@ class User(db.Model, UserMixin):
                 self.email.encode('utf-8')).hexdigest()
         #self.followed.append(Follow(followed=self))
 
-
     def __repr__(self):
         return 'User: %r' % self.username
+
+    @staticmethod
+    def add_self_follows():
+        for user in User.query.all():
+            if not user.is_following(user):
+                user.follow(user)
+                db.session.add(user)
+                db.session.commit()
+
+    @property
+    def followed_posts(self):
+        return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
+            .filter_by(Follow.follower_id == self.id)
 
     @property
     def password(self):
