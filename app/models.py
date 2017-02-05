@@ -46,7 +46,7 @@ class Role(db.Model):
             role.permissions = roles[r][0]
             role.default = roles[r][1]
             db.session.add(role)
-        db.session.commit()    
+        db.session.commit()
 
 class Follow(db.Model):
     __tablename__ = 'follows'
@@ -219,4 +219,6 @@ class Comment(db.Model):
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
+
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
+
