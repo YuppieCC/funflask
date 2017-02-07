@@ -98,6 +98,19 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return 'User: %r' % self.username
     
+    def to_json(self):
+        json_user = {
+            'url': url_for('api.get_post', id=self.id, _extrnal=True),
+            'username': self.username,
+            'member_since': self.member_since,
+            'last_login': self.last_login,
+            'posts': url_for('api.get_user_posts', id=self.id, _extrnal=True),
+            'followed_posts': url_for('api.get_user_followed_posts',
+                                      id=self.id, _extrnal=True),
+            'post_count': self.posts.count()
+        }
+        return json_user
+
     def generate_auth_token(self, expiration):
         s = Serializer(current_app.config['SECRET_KEY'],
                        expires_in=expiration)
@@ -199,6 +212,19 @@ class Post(db.Model):
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
+
+    def to_json(self):
+        json_post = {
+            'url': url_for('api.get_post', id=self.id, _extrnal=True),
+            'body': self.body,
+            'body_html': self.timestamp,
+            'author': url_for('api.get_user', id=self.author_id,
+                              _extrnal=True),
+            'comments': url_for('api.get_post_comments', id=self.id,
+                                _extrnal=True),
+            'comment_count': self.comments.count()
+        }
+        return json_post
 
 db.event.listen(Post.body, 'set', Post.on_changed_body)
 
