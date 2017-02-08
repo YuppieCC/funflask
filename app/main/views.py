@@ -53,11 +53,11 @@ def edit_profile():
         current_user.about_me = form.about_me.data
         db.session.add(current_user)
         flash('Your profile has been changed.')
-        return redirect(url_for('.user', username=current_user.username, realname=current_user.realname))
+        return redirect(url_for('.user', username=current_user.username))
     form.realname.data = current_user.username
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html', form=form, user=user)
+    return render_template('edit_profile.html', form=form)
 
 @main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -119,7 +119,7 @@ def edit(id):
         post.body = form.body.data
         db.session.add(post)
         flash('The post has been updated.')
-        return redirect(url_for('post', id=post.id))
+        return redirect(url_for('.post', id=post.id))
     form.body.data = post.body
     return render_template('edit_post.html', form=form)
 

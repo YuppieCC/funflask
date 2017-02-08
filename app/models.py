@@ -3,6 +3,7 @@ from flask.ext.login import UserMixin, AnonymousUserMixin
 from flask import flash, current_app, request, url_for
 from datetime import datetime
 from markdown import markdown
+from app.exceptions import ValidationError
 import bleach
 import hashlib
 
@@ -63,7 +64,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
     realname = db.Column(db.String(64))
-    location = db.Column(db.String(64), unique=True, index=True)
+    location = db.Column(db.String(64))
     about_me = db.Column(db.Text())
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_login = db.Column(db.DateTime(), default=datetime.utcnow)
@@ -203,6 +204,13 @@ class Post(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('Flaskusers.id'))
     body_html = db.Column(db.Text)
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
+
+    @staticmethod
+    def from_json(json_post):
+        body = json_post.get('body')
+        if body is None or body == '':
+            raise ValidationError('post does not have a body')
+        return Post(body=body)
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
