@@ -13,12 +13,15 @@ Flask-Script==2.0.5
 Flask-SQLAlchemy==2.1
 Flask-WTF==0.14.2
 html5lib==0.9999999
+httpie==0.9.9
 itsdangerous==0.24
 Jinja2==2.9.4
 Mako==1.0.6
 Markdown==2.6.8
 MarkupSafe==0.23
+Pygments==2.2.0
 python-editor==1.0.3
+requests==2.13.0
 six==1.10.0
 SQLAlchemy==1.1.4
 visitor==0.1.3
