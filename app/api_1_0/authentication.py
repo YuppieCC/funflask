@@ -1,4 +1,5 @@
 from flask.ext.httpauth import HTTPBasicAuth
+
 from .errors import forbidden_error
 
 auth = HTTPBasicAuth()
