@@ -1,6 +1,6 @@
 from flask import jsonify
 
-from app.exceptios import ValidationError
+from app.exceptions import ValidationError
 from . import api
 
 def forbidden(message):

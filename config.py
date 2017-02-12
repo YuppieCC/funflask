@@ -9,6 +9,14 @@ class Config:
     FLASK_FOLLOWERS_PER_PAGE = 50
     FLASK_COMMENTS_PER_PAGE = 50
 
+    MAIL_SERVER = 'smtp.163.com'
+    MAIL_PORT = 25
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = 'zysloving@163.com'
+    MAIL_PASSWORD = 'zys649736960'
+    FLASKY_MAIL_SUBJECT_PREFIX = '[FLASKY_ADMIN]'
+    FLASKY_MAIL_SENDER = 'Flasky Admin <zysloving@163.com>'
+
     @staticmethod
     def init_app(app):
         pass
