@@ -179,3 +179,13 @@ def unfollow(username):
     current_user.unfollow(user)
     flash('You are not following %s anymore.' % username)
     return redirect(url_for('.user', username=username))
+
+@main.route('/shutdown')
+def server_shutdown():
+    if not current_app.testing:
+        abort(404)
+    shutdown = request.environ.get('werkzeug.server.shutdown')
+    if not shutdown:
+        abort(500)
+    shutdown()
+    return 'Server is shutting down...'
