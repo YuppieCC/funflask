@@ -6,7 +6,6 @@
 这是自己学习 Flask 框架时实现[《Flask Web开发：基于Python的Web应用开发实战》](https://book.douban.com/subject/26274202/)的案例。
 
 
-
 ## Build
 ```bash
 $ git clone git@github.com:YuppieCC/FlaskFun.git
@@ -32,5 +31,4 @@ $ source venv/bin/activate
 (venv) $ python manage.py runserver
 ```
 ## Show
-<img src="https://i.loli.net/2017/12/10/5a2d416db2aba.png" title="flaskfun" />
-
+<img src="https://raw.githubusercontent.com/YuppieCC/Django-FreeNote/37bdfcd7bdff2b96831a6f41c425b9ba3a774c9e/show/f1.png" >
